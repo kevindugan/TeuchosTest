@@ -15,24 +15,33 @@ int main (){
   MPI_Comm_rank(MPI_COMM_WORLD, &world_comm_rank);
   MPI_Comm_size(MPI_COMM_WORLD, &world_comm_size);
 
-  auto globalComm = Teuchos::rcp(new Teuchos::MpiComm<int>(Teuchos::opaqueWrapper(MPI_COMM_WORLD)));
+  // Split the communicator
+  int color = world_comm_rank / 4;
+  MPI_Comm row_comm;
+  MPI_Comm_split(MPI_COMM_WORLD, color, world_comm_rank, &row_comm);
+  int row_comm_rank;
+  MPI_Comm_rank(row_comm, &row_comm_rank);
+
+  auto globalComm = Teuchos::rcp(new Teuchos::MpiComm<int>(Teuchos::opaqueWrapper(row_comm)));
 
   Teuchos::RCP<Teuchos::ParameterList> verain = Teuchos::parameterList(std::string("VERA: ")+std::string("name"));
 
   Teuchos::updateParametersFromXmlFileAndBroadcast("coupled_1.5D.xml", verain.ptr(),*globalComm); 
 
-  //verain->print(std::cout, Teuchos::ParameterList::PrintOptions().showDoc(true).indent(2).showTypes(true));
+  // verain->print(std::cout, Teuchos::ParameterList::PrintOptions().showDoc(true).indent(2).showTypes(true));
+
+  // Print value from parameter list from each process
   if (world_comm_rank != 0){
     std::stringstream ss;
-    ss << "Process " << world_comm_rank << ", Density: " << verain->sublist("CORE").sublist("Materials").sublist("Material_pyrex").get<double>("density") << std::endl;
+    ss << "Process " << world_comm_rank << " (" << row_comm_rank << "), Density: " << verain->sublist("CORE").sublist("Materials").sublist("Material_pyrex").get<double>("density") << std::endl;
     sendMessage(ss, MPI_COMM_WORLD);
   }else {
     std::stringstream ss;
-    ss << "Process " << world_comm_rank << ", Density: " << verain->sublist("CORE").sublist("Materials").sublist("Material_pyrex").get<double>("density") << std::endl;
+    ss << "Process " << world_comm_rank << " (" << row_comm_rank << "), Density: " << verain->sublist("CORE").sublist("Materials").sublist("Material_pyrex").get<double>("density") << std::endl;
     recvMessage(ss, MPI_COMM_WORLD);
   }
 
-
+  // Print ranking from each process
   if (world_comm_rank != 0){
     std::stringstream ss;
     ss << "World CPU: " << world_comm_rank << "/" << world_comm_size << std::endl;
