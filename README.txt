@@ -8,7 +8,7 @@ export TRILINOS_DIR=~/Software/VERA/build-debug/INSTALL
 Compile using the MPI wrappers for C++
 
 ```sh
-mpic++ -std=c++11 -o test -I ${TRILINOS_DIR}/include test.cpp -L ${TRILINOS_DIR}/lib -lteuchoscomm -lteuchosparameterlist -lteuchoscore
+mpic++ -std=c++11 -o test -I ${TRILINOS_DIR}/include ParallelTest.cpp testWithLibmesh.cpp -L ${TRILINOS_DIR}/lib -lteuchoscomm -lteuchosparameterlist -lteuchoscore
 ```
 
 Run using mpiexec and exporting Trilinos to the Library Path.
