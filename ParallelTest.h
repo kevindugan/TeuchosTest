@@ -6,8 +6,13 @@
 #include "Teuchos_DefaultMpiComm.hpp"
 #include <Teuchos_XMLParameterListHelpers.hpp>
 
-class ParallelTest{
+#include "libmesh/parallel_object.h"
+#include "libmesh/communicator.h"
+
+class ParallelTest : public libMesh::ParallelObject {
   public:
+    ParallelTest(const libMesh::Parallel::Communicator &comm);
+
     void testPL();
 
     void sendMessage(const std::stringstream &messageStream, const MPI_Comm &io_comm);

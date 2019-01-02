@@ -1,5 +1,7 @@
 #include "ParallelTest.h"
 
+ParallelTest::ParallelTest(const libMesh::Parallel::Communicator &comm) : libMesh::ParallelObject(comm){}
+
 void ParallelTest::testPL(){
   int world_comm_rank, world_comm_size;
   MPI_Comm_rank(MPI_COMM_WORLD, &world_comm_rank);

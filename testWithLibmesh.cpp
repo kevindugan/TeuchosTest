@@ -1,11 +1,12 @@
 #include "ParallelTest.h"
+#include "libmesh/libmesh.h"
 
-int main (){
+int main (int argc, char ** argv){
 
-  MPI_Init(NULL, NULL);
+  libMesh::LibMeshInit init (argc, argv);
 
   // Test Parameter List
-  ParallelTest test;
+  ParallelTest test(init.comm());
   test.testPL();
 
   // Print ranking from each process
@@ -22,7 +23,6 @@ int main (){
     test.recvMessage(ss, MPI_COMM_WORLD);
   }
 
-  MPI_Finalize();
   return 0;
 }
 
