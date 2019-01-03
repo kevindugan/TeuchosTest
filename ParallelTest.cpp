@@ -4,10 +4,10 @@ ParallelTest::ParallelTest(const libMesh::Parallel::Communicator &comm) : libMes
 
 void ParallelTest::testPL(){
   int world_comm_rank, world_comm_size;
-  MPI_Comm_rank(MPI_COMM_WORLD, &world_comm_rank);
-  MPI_Comm_size(MPI_COMM_WORLD, &world_comm_size);
+  MPI_Comm_rank(_communicator.get(), &world_comm_rank);
+  MPI_Comm_size(_communicator.get(), &world_comm_size);
 
-  auto globalComm = Teuchos::rcp(new Teuchos::MpiComm<int>(Teuchos::opaqueWrapper(MPI_COMM_WORLD)));
+  auto globalComm = Teuchos::rcp(new Teuchos::MpiComm<int>(Teuchos::opaqueWrapper(_communicator.get())));
 
   Teuchos::RCP<Teuchos::ParameterList> verain = Teuchos::parameterList(std::string("VERA: ")+std::string("name"));
 
@@ -17,11 +17,11 @@ void ParallelTest::testPL(){
   if (world_comm_rank != 0){
     std::stringstream ss;
     ss << "Process " << world_comm_rank << ", Density: " << verain->sublist("CORE").sublist("Materials").sublist("Material_pyrex").get<double>("density") << std::endl;
-    sendMessage(ss, MPI_COMM_WORLD);
+    sendMessage(ss, _communicator.get());
   }else {
     std::stringstream ss;
     ss << "Process " << world_comm_rank << ", Density: " << verain->sublist("CORE").sublist("Materials").sublist("Material_pyrex").get<double>("density") << std::endl;
-    recvMessage(ss, MPI_COMM_WORLD);
+    recvMessage(ss, _communicator.get());
   }
 }
 

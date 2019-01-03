@@ -11,9 +11,9 @@ Test With Libmesh:
 
 ```sh
 mpic++ -g -O0 -std=c++11 -o test \
-       -I ~/Software/VERA/build-debug/INSTALL/include \
+       -I ${TRILINOS_DIR}/include \
        -I $MOOSE_DIR/libmesh/installed/include ParallelTest.cpp testWithLibmesh.cpp \
-       -L ~/Software/VERA/build-debug/INSTALL/lib -lteuchoscomm -lteuchosparameterlist -lteuchoscore \
+       -L ${TRILINOS_DIR}/lib -lteuchoscomm -lteuchosparameterlist -lteuchoscore \
        -L $MOOSE_DIR/libmesh/installed/lib -lmesh_dbg
 ```
 
@@ -26,6 +26,6 @@ mpic++ -std=c++11 -o test -I ${TRILINOS_DIR}/include test.cpp -L ${TRILINOS_DIR}
 Run using mpiexec and exporting Trilinos to the Library Path.
 
 ```sh
-LD_LIBRARY_PATH=~/Software/VERA/build-debug/INSTALL/lib:$MOOSE_DIR/libmesh/installed/lib:$LD_LIBRARY_PATH mpiexec -n 8 ./test
+LD_LIBRARY_PATH=${TRILINOS_DIR}/lib:$MOOSE_DIR/libmesh/installed/lib:$LD_LIBRARY_PATH mpiexec -n 8 ./test
 ```
 

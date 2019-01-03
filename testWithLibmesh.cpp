@@ -3,7 +3,7 @@
 
 int main (int argc, char ** argv){
 
-  libMesh::LibMeshInit init (argc, argv);
+  libMesh::LibMeshInit init (argc, argv, MPI_COMM_WORLD);
 
   // Test Parameter List
   ParallelTest test(init.comm());
