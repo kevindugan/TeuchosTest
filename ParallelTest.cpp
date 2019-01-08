@@ -1,4 +1,5 @@
 #include "ParallelTest.h"
+#include <assert.h>
 
 ParallelTest::ParallelTest(const libMesh::Parallel::Communicator &comm) : libMesh::ParallelObject(comm){}
 
@@ -13,16 +14,27 @@ void ParallelTest::testPL(){
 
   Teuchos::updateParametersFromXmlFileAndBroadcast("coupled_1.5D.xml", verain.ptr(),*globalComm);
 
+  verain->print();
+  std::cout << std::flush;
+
   // Print value from parameter list from each process
   if (world_comm_rank != 0){
     std::stringstream ss;
-    ss << "Process " << world_comm_rank << ", Density: " << verain->sublist("CORE").sublist("Materials").sublist("Material_pyrex").get<double>("density") << std::endl;
+    double density = verain->sublist("CORE").sublist("Materials").sublist("Material_pyrex").get<double>("density");
+    assert(std::fabs(density-2.23) < 1E-13);
+    ss << "Process " << world_comm_rank << ", Density: " << density << std::endl;
     sendMessage(ss, _communicator.get());
   }else {
     std::stringstream ss;
-    ss << "Process " << world_comm_rank << ", Density: " << verain->sublist("CORE").sublist("Materials").sublist("Material_pyrex").get<double>("density") << std::endl;
+    double density = verain->sublist("CORE").sublist("Materials").sublist("Material_pyrex").get<double>("density");
+    assert(std::fabs(density-2.23) < 1E-13);
+    ss << "Process " << world_comm_rank << ", Density: " << density << std::endl;
     recvMessage(ss, _communicator.get());
   }
+
+  verain->print();
+  std::cout << std::flush;
+
 }
 
 void ParallelTest::sendMessage(const std::stringstream &messageStream, const MPI_Comm &io_comm){
